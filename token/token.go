@@ -45,6 +45,7 @@ const (
   ELSEIF = "ELSEIF"
   ELSE = "ELSE"
   RETURN = "RETURN"
+  EXIT = "EXIT"
 )
 
 var keywords = map[string]TokenType{
@@ -56,6 +57,7 @@ var keywords = map[string]TokenType{
   "else": ELSE,
   "elseif": ELSEIF,
   "return": RETURN,
+  "exit": EXIT,
 }
 
 func LookupKeyword(keyword string) TokenType {

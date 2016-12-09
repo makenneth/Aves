@@ -1,8 +1,8 @@
 package lexer
 
 import (
-  "fmt"
   "github.com/makenneth/aves/token"
+  "fmt"
 )
 
 type Lexer struct {
@@ -20,8 +20,6 @@ func New(input string) *Lexer {
 }
 
 func (this *Lexer) readChar() {
-  fmt.Println(len(this.input))
-  fmt.Println(this.readPosition)
   if this.readPosition >= len(this.input) {
     //0 is null in ASCII
     this.ch = 0
@@ -65,8 +63,17 @@ func (this *Lexer) NextToken() token.Token {
         tok = token.Token{Type: token.BANG, Literal: string(this.ch)}
       }
     case '/':
-      //read comment
-      tok = token.Token{Type: token.BANG, Literal: string(this.ch)}
+      if this.peekChar() == '/' {
+        this.readChar()
+        this.readUntilLineEnd()
+        return this.NextToken()
+      } else if this.peekChar() == '*' {
+        this.readChar()
+        this.readUntilCommentEnd()
+        return this.NextToken()
+      } else {
+        tok = token.Token{Type: token.SLASH, Literal: string(this.ch)}
+      }
     case '-':
       tok = token.Token{Type: token.MINUS, Literal: string(this.ch)}
     case '+':
@@ -111,6 +118,31 @@ func (this *Lexer) NextToken() token.Token {
   return tok
 }
 
+func (this *Lexer) readUntilLineEnd() {
+  for {
+    this.readChar()
+
+    if this.ch == '\n' || this.ch == '\r' || this.ch == 0 {
+      break
+    }
+  }
+}
+
+func (this *Lexer) readUntilCommentEnd() {
+  for {
+    this.readChar()
+    fmt.Println(string(this.ch), string(this.peekChar()))
+    if this.ch == 0 {
+      break
+    }
+
+    if this.ch == '*' && this.peekChar() == '/' {
+      this.readChar()
+      this.readChar()
+      break
+    }
+  }
+}
 func (this *Lexer) readSpread() bool {
   for i := 0; i < 2; i++ {
     this.readChar()

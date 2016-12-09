@@ -4,6 +4,7 @@ import (
   "bufio"
   "fmt"
   "io"
+  "os"
   "github.com/makenneth/aves/lexer"
   "github.com/makenneth/aves/token"
 )
@@ -24,6 +25,9 @@ func Start(in io.Reader, out io.Writer) {
     l := lexer.New(line)
 
     for tok := l.NextToken(); tok.Type != token.EOF; tok = l.NextToken() {
+      if tok.Type == token.EXIT {
+        os.Exit(0)
+      }
       fmt.Printf("  %+v\n", tok)
     }
   }
